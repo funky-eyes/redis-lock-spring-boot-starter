@@ -10,10 +10,23 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RedisLock {
-    String key();
+    /**
+     * -锁值
+     */
+    String key() default "";
 
     /**
      * -单位毫米,默认60秒后直接跳出
      */
     int timeoutMills() default 60000;
+
+    /**
+     * -尝试获取锁频率
+     */
+    int retry() default 50;
+
+    /**
+     * -锁过期时间
+     */
+    int lockTimeout() default 60000;
 }

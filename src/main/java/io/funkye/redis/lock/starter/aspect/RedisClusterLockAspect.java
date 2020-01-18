@@ -35,33 +35,32 @@ public class RedisClusterLockAspect {
     public void annotationPoinCut() {}
 
     @Around("annotationPoinCut()")
-    public void arround(ProceedingJoinPoint joinPoint) throws InterruptedException {
+    public void around(ProceedingJoinPoint joinPoint) throws InterruptedException {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         RedisLock annotation = signature.getMethod().getAnnotation(RedisLock.class);
-        if (annotation.key() == null || annotation.key().length() <= 0) {
-            throw new RuntimeException("分布式锁key值不允许为:" + annotation.key());
+        String key = annotation.key();
+        if (key == null || key.length() <= 0) {
+            key = joinPoint.getTarget().getClass().getName() + signature.getName();
         }
         Long startTime = System.currentTimeMillis();
-        LOGGER.info("########## key:{},开始分布式上锁 ##########", annotation.key());
         while (true) {
-            if (redisLockService.setIfAbsent(annotation.key(), "0", Duration.ofMillis(60000))) {
-                LOGGER.info("########## 得到锁 ##########");
+            if (redisLockService.setIfAbsent(key, "0", Duration.ofMillis(annotation.lockTimeout()))) {
+                LOGGER.info("########## 得到锁:{} ##########", key);
                 break;
             }
             if (System.currentTimeMillis() - startTime > annotation.timeoutMills()) {
                 throw new RuntimeException("尝试获得分布式锁超时..........");
             }
-            LOGGER.info("########## 尝试获取锁 ##########");
-            Thread.sleep(200);
+            LOGGER.info("########## 尝试获取锁:{} ##########", key);
+            Thread.sleep(annotation.retry());
         }
         try {
             Object o = joinPoint.proceed();
         } catch (Throwable e) {
             LOGGER.error("出现异常:{}", e.getMessage());
         } finally {
-            redisLockService.delete(annotation.key());
-            LOGGER.info("########## 释放锁:{},总耗时:{}ms ##########", annotation.key(),
-                System.currentTimeMillis() - startTime);
+            redisLockService.delete(key);
+            LOGGER.info("########## 释放锁:{},总耗时:{}ms ##########", key, System.currentTimeMillis() - startTime);
         }
     }
 }
