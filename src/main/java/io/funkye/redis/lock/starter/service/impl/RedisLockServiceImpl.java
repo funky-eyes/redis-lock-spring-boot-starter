@@ -12,7 +12,7 @@ import io.funkye.redis.lock.starter.service.IRedisLockService;
 /**
  * -redis服务实现
  *
- * @author Zhang Kangkang
+ * @author chenjianbin
  * @version 1.0.0
  */
 @DependsOn({"redisLockTemplate"})
