@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -60,7 +61,8 @@ public class RedisLockAutoConfigure {
 
     @DependsOn({"jedisLockConnectionFactory"})
     @Bean
-    public RedisTemplate<String, Object> redisLockTemplate(JedisConnectionFactory jedisLockConnectionFactory) {
+    public RedisTemplate<String, Object>
+        redisLockTemplate(@Qualifier("jedisLockConnectionFactory") JedisConnectionFactory jedisLockConnectionFactory) {
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(jedisLockConnectionFactory);
         redisTemplate.setKeySerializer(new JdkSerializationRedisSerializer());

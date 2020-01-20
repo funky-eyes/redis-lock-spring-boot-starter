@@ -35,7 +35,7 @@ public class RedisClusterLockAspect {
     public void annotationPoinCut() {}
 
     @Around("annotationPoinCut()")
-    public void around(ProceedingJoinPoint joinPoint) throws InterruptedException {
+    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature)joinPoint.getSignature();
         RedisLock annotation = signature.getMethod().getAnnotation(RedisLock.class);
         String key = annotation.key();
@@ -55,12 +55,14 @@ public class RedisClusterLockAspect {
             Thread.sleep(annotation.retry());
         }
         try {
-            Object o = joinPoint.proceed();
+            return joinPoint.proceed();
         } catch (Throwable e) {
             LOGGER.error("出现异常:{}", e.getMessage());
+            throw e;
         } finally {
             redisLockService.delete(key);
-            LOGGER.info("########## 释放锁:{},总耗时:{}ms ##########", key, System.currentTimeMillis() - startTime);
+            LOGGER.info("########## 释放锁:{},总耗时:{}ms,{} ##########", key, (System.currentTimeMillis() - startTime));
         }
+
     }
 }
