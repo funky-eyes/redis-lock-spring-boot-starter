@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RedisLock {
     /**
-     * -锁值
+     * -锁值,默认为类全路径名+方法名
      */
     String key() default "";
 
