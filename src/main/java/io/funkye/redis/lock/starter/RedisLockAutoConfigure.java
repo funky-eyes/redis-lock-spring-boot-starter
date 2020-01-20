@@ -52,7 +52,8 @@ public class RedisLockAutoConfigure {
         }
         JedisClientConfiguration.JedisClientConfigurationBuilder jedisClientConfiguration =
             JedisClientConfiguration.builder();
-        jedisClientConfiguration.connectTimeout(Duration.ofMillis(prop.getTimeOut()));// connection timeout
+        jedisClientConfiguration.connectTimeout(Duration.ofMillis(prop.getTimeOut() > 0 ? prop.getTimeOut() : 60000));// connection
+                                                                                                                      // timeout
         JedisConnectionFactory factory =
             new JedisConnectionFactory(redisStandaloneConfiguration, jedisClientConfiguration.build());
         LOGGER.info("分布式事务锁初始化完成:{}........................", prop);
