@@ -1,9 +1,9 @@
-package funkye.icu.redis.lock.starter;
+package icu.funkye.redis.lock.starter;
 
 
 import javax.annotation.PostConstruct;
 
-import funkye.icu.redis.lock.starter.config.JedisLockProperties;
+import icu.funkye.redis.lock.starter.config.JedisLockProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,8 @@ import redis.clients.jedis.Jedis;
 
 import java.time.Duration;
 
-@ComponentScan(basePackages = {"funkye.icu.redis.lock.starter.config", "funkye.icu.redis.lock.starter.service",
-    "funkye.icu.redis.lock.starter.aspect"})
+@ComponentScan(basePackages = {"icu.funkye.redis.lock.starter.config", "icu.funkye.redis.lock.starter.service",
+    "icu.funkye.redis.lock.starter.aspect"})
 @EnableConfigurationProperties({JedisLockProperties.class})
 @ConditionalOnClass(Jedis.class)
 @Configuration

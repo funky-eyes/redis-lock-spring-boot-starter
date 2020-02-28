@@ -1,4 +1,4 @@
-package funkye.icu.redis.lock.starter.config;
+package icu.funkye.redis.lock.starter.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

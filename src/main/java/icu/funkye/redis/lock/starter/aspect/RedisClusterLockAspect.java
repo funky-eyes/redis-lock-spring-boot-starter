@@ -1,9 +1,9 @@
-package funkye.icu.redis.lock.starter.aspect;
+package icu.funkye.redis.lock.starter.aspect;
 
 import java.time.Duration;
 
-import funkye.icu.redis.lock.starter.config.annotation.RedisLock;
-import funkye.icu.redis.lock.starter.service.IRedisLockService;
+import icu.funkye.redis.lock.starter.config.annotation.RedisLock;
+import icu.funkye.redis.lock.starter.service.IRedisLockService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -30,7 +30,7 @@ public class RedisClusterLockAspect {
     @Autowired
     private IRedisLockService<String, String> redisLockService;
 
-    @Pointcut("@annotation(funkye.icu.redis.lock.starter.config.annotation.RedisLock)")
+    @Pointcut("@annotation(icu.funkye.redis.lock.starter.config.annotation.RedisLock)")
     public void annotationPoinCut() {}
 
     @Around("annotationPoinCut()")

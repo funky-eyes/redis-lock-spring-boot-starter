@@ -1,4 +1,4 @@
-package funkye.icu.redis.lock.starter.config.annotation;
+package icu.funkye.redis.lock.starter.config.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
