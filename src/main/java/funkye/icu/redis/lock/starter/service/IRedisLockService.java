@@ -1,4 +1,4 @@
-package io.funkye.redis.lock.starter.service;
+package funkye.icu.redis.lock.starter.service;
 
 import java.time.Duration;
 
