@@ -5,6 +5,16 @@ redis实现分布式锁
 
 #### 软件架构
 
+首先引用本插件
+
+```java
+<dependency>
+  <groupId>icu.funkye</groupId>
+  <artifactId>redis-lock-spring-boot-starter</artifactId>
+  <version>0.1</version>
+</dependency>
+```
+
 项目需引入如下依赖方可使用:
 
 ```java
