@@ -9,6 +9,9 @@ import java.lang.annotation.Target;
 @Documented
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
+/**
+ * @author funkye
+ */
 public @interface RedisLock {
     /**
      * -锁值,默认为类全路径名+方法名
@@ -18,7 +21,7 @@ public @interface RedisLock {
     /**
      * -单位毫米,默认60秒后直接跳出
      */
-    int timeoutMills() default 60000;
+    long timeoutMills() default 60000;
 
     /**
      * -尝试获取锁频率
@@ -29,4 +32,11 @@ public @interface RedisLock {
      * -锁过期时间
      */
     int lockTimeout() default 60000;
+
+    /**
+     * -自旋最大次数
+     * 
+     * @return
+     */
+    int spin() default 10;
 }

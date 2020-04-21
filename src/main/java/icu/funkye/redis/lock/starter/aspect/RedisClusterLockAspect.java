@@ -1,6 +1,8 @@
 package icu.funkye.redis.lock.starter.aspect;
 
 import java.time.Duration;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import icu.funkye.redis.lock.starter.config.annotation.RedisLock;
 import icu.funkye.redis.lock.starter.service.IRedisLockService;
@@ -42,26 +44,51 @@ public class RedisClusterLockAspect {
             key = joinPoint.getTarget().getClass().getName() + signature.getName();
         }
         Long startTime = System.currentTimeMillis();
-        while (true) {
-            if (redisLockService.setIfAbsent(key, "0", Duration.ofMillis(annotation.lockTimeout()))) {
-                LOGGER.debug("########## 得到锁:{} ##########", key);
-                break;
+        String uuid = UUID.randomUUID().toString();
+        Integer spin = annotation.spin();
+        while (!lock(key, uuid, annotation)) {
+            if (spin > 0) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("########## 尝试自旋获取锁:{},剩余次数:{} ##########", key, spin);
+                }
+                if (lock(key, uuid, annotation)) {
+                    break;
+                }
+                spin--;
+            } else {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("########## 尝试获取锁:{} ##########", key);
+                }
+                Thread.sleep(annotation.retry());
             }
             if (System.currentTimeMillis() - startTime > annotation.timeoutMills()) {
                 throw new RuntimeException("尝试获得分布式锁超时..........");
             }
-            LOGGER.debug("########## 尝试获取锁:{} ##########", key);
-            Thread.sleep(annotation.retry());
         }
         try {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("########## {}得到锁:{} ##########",
+                    spin < annotation.spin() ? spin > 0 ? "自旋获取" : "重量级获取" : "", key);
+            }
             return joinPoint.proceed();
         } catch (Throwable e) {
-            LOGGER.error("出现异常:{}", e.getMessage());
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("出现异常:{}", e.getMessage());
+            }
             throw e;
         } finally {
-            redisLockService.delete(key);
-            LOGGER.debug("########## 释放锁:{},总耗时:{}ms,{} ##########", key, (System.currentTimeMillis() - startTime));
+            String owner = redisLockService.get(key);
+            if (uuid.equals(owner)) {
+                redisLockService.delete(key);
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("########## 释放锁:{},总耗时:{}ms,{} ##########", key,
+                        (System.currentTimeMillis() - startTime));
+                }
+            }
         }
+    }
 
+    public boolean lock(String key, String uuid, RedisLock redisLock) {
+        return redisLockService.setIfAbsent(key, uuid, Duration.ofMillis(redisLock.lockTimeout()));
     }
 }
