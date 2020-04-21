@@ -5,7 +5,7 @@
 
     <groupId>icu.funkye</groupId>
     <artifactId>redis-lock-spring-boot-starter</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.2</version>
     <build>
         <plugins>
             <plugin>
