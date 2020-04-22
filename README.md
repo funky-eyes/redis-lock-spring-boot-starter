@@ -11,7 +11,7 @@ redis实现分布式锁
 <dependency>
   <groupId>icu.funkye</groupId>
   <artifactId>redis-lock-spring-boot-starter</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
 </dependency>
 ```
 
